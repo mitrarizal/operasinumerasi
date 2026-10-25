@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -62,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // Inisialisasi AdMob dan Muat Iklan Pertama Kali
-        MobileAds.initialize(this, initializationStatus -> loadInterstitialAd());
+        // Inisialisasi AdMob dan Muat Iklan Pertama Kali di Main Thread
+        MobileAds.initialize(this, initializationStatus -> {
+            runOnUiThread(this::loadInterstitialAd);
+        });
 
         adView = findViewById(R.id.adView);
         if (adView != null) {
@@ -94,16 +97,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView.addJavascriptInterface(this, "AndroidApp");
-        webView.setWebChromeClient(new WebChromeClient());
+        
+        // Logcat console untuk memantau error JavaScript dari WebView
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("WebViewJS", consoleMessage.message() + " -- Line " 
+                        + consoleMessage.lineNumber() + " of " + consoleMessage.sourceId());
+                return true;
+            }
+        });
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    return false;
-                }
-                return false;
+                return !(url.startsWith("http://") || url.startsWith("https://"));
             }
 
             @Override
@@ -207,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onAdDismissedFullScreenContent() {
                             interstitialAd = null;
-                            loadInterstitialAd(); // Muat ulang untuk pemanggilan berikutnya
+                            loadInterstitialAd();
                         }
 
                         @Override
@@ -234,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
                 if (interstitialAd != null) {
                     interstitialAd.show(MainActivity.this);
                 } else {
-                    // Jika iklan belum siap saat dipanggil, tampilkan pesan dan muat ulang
                     Toast.makeText(MainActivity.this, "Iklan sedang disiapkan, coba sebentar lagi...", Toast.LENGTH_SHORT).show();
                     loadInterstitialAd();
                 }
