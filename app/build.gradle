@@ -11,7 +11,7 @@ android {
         applicationId "com.bilangannumerasiapp"
         minSdk 24
         targetSdk 36
-        versionCode 1 // Dinaikkan dari 2 agar Play Console menerima file rilis baru
+        versionCode 1
         versionName "1.0"
     }
 
@@ -27,8 +27,8 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true // Mengaktifkan R8 compiler, obfuscation, dan pengoptimalan DEX
-            shrinkResources true // Menghapus resource/asset yang tidak digunakan
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,7 +44,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.android.gms:play-services-ads:23.0.0'
 
-    // Firebase BoM v32.8.0 (Aman untuk Java murni)
     implementation platform('com.google.firebase:firebase-bom:32.8.0')
     implementation 'com.google.firebase:firebase-analytics'
 }
