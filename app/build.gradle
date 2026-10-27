@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application' version '8.5.0' // Dinaikkan agar mendukung SDK 36
+    id 'com.android.application' version '8.5.0'
     id 'org.jetbrains.kotlin.android' version '1.9.24'
     id 'com.google.gms.google-services' version '4.4.2'
 }
@@ -51,9 +51,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.android.gms:play-services-ads:23.0.0'
 
-    // Firebase BoM (Bill of Materials) untuk mengelola versi Firebase secara otomatis
-   implementation platform('com.google.firebase:firebase-bom:35.1.0')
-
-    // Tambahkan dependensi Firebase yang Anda gunakan (contoh: Firebase Realtime Database)
+    // Firebase BoM versi 35.1.0 & Database
+    implementation platform('com.google.firebase:firebase-bom:35.1.0')
     implementation 'com.google.firebase:firebase-database'
 }
