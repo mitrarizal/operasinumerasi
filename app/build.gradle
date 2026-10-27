@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services' // <-- Tambahkan plugin Google Services di sini
 }
 
 android {
@@ -49,4 +50,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.android.gms:play-services-ads:23.0.0'
+
+    // Firebase BoM (Bill of Materials) untuk mengelola versi Firebase secara otomatis
+    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+
+    // Tambahkan dependensi Firebase yang Anda gunakan (contoh: Firebase Realtime Database)
+    implementation 'com.google.firebase:firebase-database'
 }
