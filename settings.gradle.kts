@@ -1,14 +1,13 @@
 pluginManagement {
+    plugins {
+        id 'com.android.application' version '8.5.0'
+        id 'com.google.gms.google-services' version '4.3.15'
+    }
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
-}
-
-// Tambahkan di sini agar terdaftar secara global
-plugins {
-    id("com.google.gms.google-services") version "4.5.0" apply false
 }
 
 dependencyResolutionManagement {
