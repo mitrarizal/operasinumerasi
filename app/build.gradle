@@ -52,7 +52,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:23.0.0'
 
     // Firebase BoM (Bill of Materials) untuk mengelola versi Firebase secara otomatis
-    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+   implementation platform('com.google.firebase:firebase-bom:35.1.0')
 
     // Tambahkan dependensi Firebase yang Anda gunakan (contoh: Firebase Realtime Database)
     implementation 'com.google.firebase:firebase-database'
