@@ -1,6 +1,7 @@
 pluginManagement {
     plugins {
         id("com.android.application") version "8.5.0"
+        id("org.jetbrains.kotlin.android") version "1.9.20"
         id("com.google.gms.google-services") version "4.3.15"
     }
     repositories {
@@ -18,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "com.bilangannumerasiapp"
+rootProject.name = "operasinumerasi"
 include(":app")
