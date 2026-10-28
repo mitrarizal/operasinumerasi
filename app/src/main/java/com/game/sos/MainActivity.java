@@ -57,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0b0f19")));
+        // Mencegah flash hitam/gelap saat window dibuat
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F8F9FA")));
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.progressBar);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // Inisialisasi AdMob dan Muat Iklan Pertama Kali di Main Thread
         MobileAds.initialize(this, initializationStatus -> {
             runOnUiThread(this::loadInterstitialAd);
         });
@@ -74,12 +74,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView = findViewById(R.id.webview);
-        webView.setBackgroundColor(Color.parseColor("#0b0f19"));
+        // Menghilangkan kedap-kedip WebView
+        webView.setBackgroundColor(Color.TRANSPARENT);
 
         int topPadding = (int) (20 * getResources().getDisplayMetrics().density);
         webView.setPadding(0, topPadding, 0, 0);
-
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -97,8 +96,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView.addJavascriptInterface(this, "AndroidApp");
-        
-        // Logcat console untuk memantau error JavaScript dari WebView
+
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
@@ -211,17 +209,19 @@ public class MainActivity extends AppCompatActivity {
                     interstitialAd = ad;
                     isInterstitialLoading = false;
                     Log.d("AdMob", "Iklan Interstisial berhasil dimuat.");
-                    
+
                     interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                         @Override
                         public void onAdDismissedFullScreenContent() {
                             interstitialAd = null;
+                            resumeWebGame(); // Mengembalikan layar game di Web
                             loadInterstitialAd();
                         }
 
                         @Override
                         public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                             interstitialAd = null;
+                            resumeWebGame(); // Mengembalikan layar game jika iklan gagal tampil
                             loadInterstitialAd();
                         }
                     });
@@ -244,15 +244,25 @@ public class MainActivity extends AppCompatActivity {
                     interstitialAd.show(MainActivity.this);
                 } else {
                     Toast.makeText(MainActivity.this, "Iklan sedang disiapkan, coba sebentar lagi...", Toast.LENGTH_SHORT).show();
+                    resumeWebGame(); // Mencegah layar putih macet jika iklan belum siap
                     loadInterstitialAd();
                 }
             }
         });
     }
 
+    // Menginformasikan ke JavaScript web bahwa iklan selesai / gagal agar tampilan game kembali normal
+    private void resumeWebGame() {
+        if (webView != null) {
+            webView.evaluateJavascript(
+                "if (typeof onAdClosed === 'function') { onAdClosed(); } " +
+                "else if (typeof resumeGame === 'function') { resumeGame(); }", null);
+        }
+    }
+
     private void showOfflinePage(WebView view) {
         String html = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:#0b0f19;}"
+                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:#F8F9FA;}"
                 + "img{max-width:80%;height:auto;}</style></head>"
                 + "<body><img src='file:///android_asset/no_internet.png'></body></html>";
         view.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
