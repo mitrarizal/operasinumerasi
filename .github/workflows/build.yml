@@ -28,6 +28,11 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.jks
 
+      - name: Create google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: printf "%s" "$GOOGLE_SERVICES_JSON" > app/google-services.json
+
       - name: Build Release AAB
         env:
           KEYSTORE_FILE_PATH: "release.jks"
