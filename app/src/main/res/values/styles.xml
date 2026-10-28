@@ -5,8 +5,9 @@
         <item name="colorPrimaryDark">#4f46e5</item>
         <item name="colorAccent">#6366f1</item>
 
-        <!-- KUNCI ANTI-WHITE/BLACK FLASH: Samakan warna dengan background game -->
+        <!-- KUNCI ANTI WHITE/BLACK FLASH -->
         <item name="android:windowBackground">#F8F9FA</item>
         <item name="android:colorBackground">#F8F9FA</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 </resources>
