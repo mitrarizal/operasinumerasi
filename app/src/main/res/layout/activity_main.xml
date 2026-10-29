@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="#F8F9FA">
+    android:background="#0b0f19">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -18,9 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/nativeAdContainer"
-        android:paddingTop="20dp"
-        android:clipToPadding="false"
-        android:background="#F8F9FA" />
+        android:background="#0b0f19" />
 
     <FrameLayout
         android:id="@+id/nativeAdContainer"
