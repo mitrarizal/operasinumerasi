@@ -10,9 +10,7 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -45,8 +43,6 @@ import com.google.android.gms.ads.nativead.NativeAdView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String GAME_URL = "https://operasihitung17.blogspot.com/";
-
     private WebView webView;
     private FrameLayout nativeAdContainer;
     private NativeAd currentNativeAd;
@@ -62,16 +58,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6983364109428063/7136054210";
     private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-6983364109428063/9132711917";
 
-    // Jeda minimal antar penayangan iklan (25 detik) untuk mencegah penumpukan transisi
-    private long lastAdShowTime = 0;
-    private static final long AD_COOLDOWN_MS = 25000;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Menyamakan warna dasar window dengan tema game
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F8F9FA")));
+        // 1. Paksa Window background Android menjadi gelap total #0b0f19
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0b0f19")));
+
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.progressBar);
@@ -79,19 +72,17 @@ public class MainActivity extends AppCompatActivity {
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         MobileAds.initialize(this, initializationStatus -> {
-            runOnUiThread(() -> {
-                loadInterstitialAd();
-                loadNativeAd();
-            });
+            loadInterstitialAd();
+            loadNativeAd();
         });
 
         webView = findViewById(R.id.webview);
-        // Mengunci background WebView agar selaras dengan tema game (mencegah white flash)
-        webView.setBackgroundColor(Color.parseColor("#F8F9FA"));
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        
+        // 2. Kunci Background WebView
+        webView.setBackgroundColor(Color.parseColor("#0b0f19"));
 
-        int topPadding = (int) (20 * getResources().getDisplayMetrics().density);
-        webView.setPadding(0, topPadding, 0, 0);
+        // 3. Matikan Layer Type Hardware eksternal yang memicu kedap-kedip canvas pada WebView
+        webView.setLayerType(View.LAYER_TYPE_NONE, null);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -109,21 +100,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView.addJavascriptInterface(this, "AndroidApp");
-
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("WebViewJS", consoleMessage.message() + " -- Line " 
-                        + consoleMessage.lineNumber() + " of " + consoleMessage.sourceId());
-                return true;
-            }
-        });
+        webView.setWebChromeClient(new WebChromeClient());
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                return !(url.startsWith("http://") || url.startsWith("https://"));
+                if (url.contains("operasihitung17.blogspot.com")) {
+                    return false;
+                }
+                return true; 
             }
 
             @Override
@@ -140,9 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 if (progressBar != null) {
                     progressBar.setVisibility(View.GONE);
                 }
-                if (webView != null) {
-                    webView.setVisibility(View.VISIBLE);
-                }
+                webView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -173,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (isOfflineState && webView != null) {
                         isOfflineState = false;
-                        webView.loadUrl(GAME_URL);
+                        webView.loadUrl("https://operasihitung17.blogspot.com");
                     }
                 });
             }
@@ -193,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             showOfflineDialog();
         } else {
             isOfflineState = false;
-            webView.loadUrl(GAME_URL);
+            webView.loadUrl("https://operasihitung17.blogspot.com");
         }
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -229,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        Log.e("AdMob", "Gagal memuat iklan native: " + loadAdError.getMessage());
+                        // Penanganan ketika gagal memuat iklan
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder().build())
@@ -272,80 +256,9 @@ public class MainActivity extends AppCompatActivity {
         adView.setNativeAd(nativeAd);
     }
 
-    private void loadInterstitialAd() {
-        if (isInterstitialLoading || interstitialAd != null) {
-            return;
-        }
-        isInterstitialLoading = true;
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, INTERSTITIAL_AD_UNIT_ID, adRequest,
-            new InterstitialAdLoadCallback() {
-                @Override
-                public void onAdLoaded(@NonNull InterstitialAd ad) {
-                    interstitialAd = ad;
-                    isInterstitialLoading = false;
-                    Log.d("AdMob", "Iklan Interstisial berhasil dimuat.");
-
-                    interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                        @Override
-                        public void onAdDismissedFullScreenContent() {
-                            interstitialAd = null;
-                            resumeWebGame();
-                            loadInterstitialAd();
-                        }
-
-                        @Override
-                        public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                            interstitialAd = null;
-                            resumeWebGame();
-                            loadInterstitialAd();
-                        }
-                    });
-                }
-
-                @Override
-                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                    interstitialAd = null;
-                    isInterstitialLoading = false;
-                    Log.e("AdMob", "Gagal memuat iklan: " + loadAdError.getMessage());
-                }
-            });
-    }
-
-    @JavascriptInterface
-    public void panggilIklanInterstisial() {
-        runOnUiThread(() -> {
-            if (!isFinishing() && !isDestroyed()) {
-                long currentTime = System.currentTimeMillis();
-
-                // Tampilkan iklan hanya jika iklan siap DAN jeda waktu 25 detik terpenuhi
-                if (interstitialAd != null && (currentTime - lastAdShowTime >= AD_COOLDOWN_MS)) {
-                    lastAdShowTime = currentTime;
-                    interstitialAd.show(MainActivity.this);
-                } else {
-                    // Lanjut instan tanpa Toast penunda layar (Silent Fallback)
-                    resumeWebGame();
-                    if (interstitialAd == null) {
-                        loadInterstitialAd();
-                    }
-                }
-            }
-        });
-    }
-
-    // Callback instan ke JavaScript agar WebView lanjut render tanpa jeda
-    private void resumeWebGame() {
-        if (webView != null) {
-            webView.evaluateJavascript(
-                "if (typeof onAdClosed === 'function') { onAdClosed(); } " +
-                "else if (typeof resumeGame === 'function') { resumeGame(); }", null);
-        }
-    }
-
     private void showOfflinePage(WebView view) {
         String html = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:#F8F9FA;}"
+                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:#0b0f19;}"
                 + "img{max-width:80%;height:auto;}</style></head>"
                 + "<body><img src='file:///android_asset/no_internet.png'></body></html>";
         view.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
@@ -365,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
                 if (webView != null) {
                     isOfflineState = false;
-                    webView.loadUrl(GAME_URL);
+                    webView.loadUrl("https://operasihitung17.blogspot.com");
                 }
             }
         });
@@ -385,6 +298,56 @@ public class MainActivity extends AppCompatActivity {
                 (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                  capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                  capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+    }
+
+    private void loadInterstitialAd() {
+        if (isInterstitialLoading || interstitialAd != null) {
+            return;
+        }
+        isInterstitialLoading = true;
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, INTERSTITIAL_AD_UNIT_ID, adRequest,
+            new InterstitialAdLoadCallback() {
+                @Override
+                public void onAdLoaded(@NonNull InterstitialAd ad) {
+                    interstitialAd = ad;
+                    isInterstitialLoading = false;
+                    
+                    interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            interstitialAd = null;
+                            loadInterstitialAd();
+                        }
+
+                        @Override
+                        public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                            interstitialAd = null;
+                            loadInterstitialAd();
+                        }
+                    });
+                }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                    interstitialAd = null;
+                    isInterstitialLoading = false;
+                }
+            });
+    }
+
+    @JavascriptInterface
+    public void panggilIklanInterstisial() {
+        runOnUiThread(() -> {
+            if (!isFinishing() && !isDestroyed()) {
+                if (interstitialAd != null) {
+                    interstitialAd.show(MainActivity.this);
+                } else {
+                    loadInterstitialAd();
+                }
+            }
+        });
     }
 
     @Override
