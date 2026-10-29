@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">#6366f1</item>
-        <item name="colorPrimaryDark">#4f46e5</item>
-        <item name="colorAccent">#6366f1</item>
-
-        <!-- KUNCI ANTI WHITE/BLACK FLASH (Diselaraskan ke #e0f2fe) -->
+    <style name="Base.Theme.BilanganNumerasiApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Paksa warna background window sama dengan warna game -->
         <item name="android:windowBackground">#e0f2fe</item>
         <item name="android:colorBackground">#e0f2fe</item>
-        <item name="android:windowDisablePreview">true</item>
     </style>
 </resources>
