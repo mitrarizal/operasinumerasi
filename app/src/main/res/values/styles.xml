@@ -5,9 +5,9 @@
         <item name="colorPrimaryDark">#4f46e5</item>
         <item name="colorAccent">#6366f1</item>
 
-        <!-- KUNCI ANTI WHITE/BLACK FLASH -->
-        <item name="android:windowBackground">#F8F9FA</item>
-        <item name="android:colorBackground">#F8F9FA</item>
+        <!-- KUNCI ANTI WHITE/BLACK FLASH (Diselaraskan ke #e0f2fe) -->
+        <item name="android:windowBackground">#e0f2fe</item>
+        <item name="android:colorBackground">#e0f2fe</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
 </resources>
