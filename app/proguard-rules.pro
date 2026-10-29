@@ -1,27 +1,17 @@
-# ==============================================================================
-# JAVASCRIPT INTERFACE (BRIDGE WEBVIEW & NATIVE)
-# ==============================================================================
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
+# Proteksi kelas Application dan Activity utama dari obfuskasi R8
+-keep class com.ujiannet.id.MyApplication { *; }
+-keep class com.ujiannet.id.MainActivity { *; }
+-keepclasseswithmembers class * extends android.app.Application {
+    <init>();
 }
--keepattributes JavascriptInterface
 
-# ==============================================================================
-# MENJAGA CLASS APPLICATION & PACKAGE UTAMA (MENCEGAH ClassNotFoundException)
-# ==============================================================================
--keep class com.bilangannumerasiapp.MyApplication { *; }
--keep class com.bilangannumerasiapp.** { *; }
--keep class com.ujiannet.id.** { *; }
-
-# ==============================================================================
-# MENJAGA GOOGLE MOBILE ADS (ADMOB)
-# ==============================================================================
+# Proteksi Google Play Services & AdMob
 -keep class com.google.android.gms.ads.** { *; }
 -dontwarn com.google.android.gms.ads.**
 
-# ==============================================================================
-# MENJAGA PROTEKSI LISENSI & PLAY INTEGRITY GOOGLE PLAY (PAIRIP)
-# ==============================================================================
--keep class com.pairip.** { *; }
--keepclassmembers class com.pairip.** { *; }
--dontwarn com.pairip.**
+# Proteksi Firebase
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# Mempertahankan atribut runtime dan refleksi
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
