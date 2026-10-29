@@ -17,16 +17,17 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6983364109428063~5433371566" />
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustNothing"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|screenLayout|smallestScreenSize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+       <activity
+    android:name=".MainActivity"
+    android:exported="true"
+    android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+    android:hardwareAccelerated="true"
+    android:theme="@style/Base.Theme.BilanganNumerasiApp">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+</activity>
     </application>
 
 </manifest>
