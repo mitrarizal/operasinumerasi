@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Kunci warna window utama agar tidak memutih saat transisi
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(BG_COLOR)));
         setContentView(R.layout.activity_main);
 
@@ -77,9 +78,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         webView = findViewById(R.id.webview);
-        webView.setBackgroundColor(Color.parseColor(BG_COLOR));
         
-        // Mencegah kedipan canvas/elements saat di-render ulang oleh JavaScript
+        // Buat background WebView transparan agar menembus ke window background
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        
+        // Nonaktifkan lapisan hardware paksa untuk mencegah glitch render canvas/JavaScript
         webView.setLayerType(View.LAYER_TYPE_NONE, null);
 
         WebSettings webSettings = webView.getSettings();
@@ -147,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Daftarkan pemantau jaringan sekali saja di onCreate
         setupNetworkCallback();
 
         if (!isInternetAvailable()) {
@@ -226,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Penanganan saat iklan native gagal dimuat
+                        // Penanganan gagal memuat iklan native
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder().build())
