@@ -5,12 +5,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="UjianNet"
+        android:label="Operasi Hitung Championship"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:hardwareAccelerated="true"
+        android:theme="@style/AppTheme">
 
         <!-- ID Aplikasi AdMob Utama -->
         <meta-data
@@ -20,7 +20,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden">
+            android:windowSoftInputMode="adjustNothing"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|screenLayout|smallestScreenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
