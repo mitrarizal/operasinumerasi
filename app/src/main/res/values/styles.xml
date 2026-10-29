@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Base.Theme.BilanganNumerasiApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Paksa warna background window sama dengan warna game -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Paksa latar belakang jendela agar tidak ada kilatan putih -->
         <item name="android:windowBackground">#e0f2fe</item>
         <item name="android:colorBackground">#e0f2fe</item>
     </style>
