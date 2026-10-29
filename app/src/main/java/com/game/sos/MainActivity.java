@@ -53,17 +53,19 @@ public class MainActivity extends AppCompatActivity {
     private ConnectivityManager.NetworkCallback networkCallback;
     private AlertDialog offlineDialog;
     private boolean isOfflineState = false;
+    private boolean isPageLoaded = false;
 
     private boolean isInterstitialLoading = false;
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6983364109428063/7136054210";
     private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-6983364109428063/9132711917";
+    private static final String BG_COLOR = "#e0f2fe"; // Diselaraskan dengan warna CSS HTML
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Paksa Window background Android menjadi gelap total #0b0f19
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0b0f19")));
+        // 1. Paksa Window background sesuai dengan warna dasar HTML (Mencegah White/Black Flash)
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(BG_COLOR)));
 
         setContentView(R.layout.activity_main);
 
@@ -78,11 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.webview);
         
-        // 2. Kunci Background WebView
-        webView.setBackgroundColor(Color.parseColor("#0b0f19"));
+        // 2. Kunci Background WebView sesuai warna HTML
+        webView.setBackgroundColor(Color.parseColor(BG_COLOR));
 
-        // 3. Matikan Layer Type Hardware eksternal yang memicu kedap-kedip canvas pada WebView
-        webView.setLayerType(View.LAYER_TYPE_NONE, null);
+        // 3. Gunakan Akselerasi Hardware GPU secara eksplisit
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                if (progressBar != null) {
+                if (progressBar != null && !isPageLoaded) {
                     progressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                isPageLoaded = true;
                 if (progressBar != null) {
                     progressBar.setVisibility(View.GONE);
                 }
@@ -258,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showOfflinePage(WebView view) {
         String html = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:#0b0f19;}"
+                + "<style>body{display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background-color:" + BG_COLOR + ";}"
                 + "img{max-width:80%;height:auto;}</style></head>"
                 + "<body><img src='file:///android_asset/no_internet.png'></body></html>";
         view.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
@@ -373,7 +376,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (!isInternetAvailable()) {
+        // Hanya tampilkan halaman offline jika benar-benar terputus dan belum pernah memuat halaman
+        if (!isInternetAvailable() && !isPageLoaded) {
             isOfflineState = true;
             showOfflinePage(webView);
             showOfflineDialog();
