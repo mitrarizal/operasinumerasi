@@ -58,15 +58,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean isInterstitialLoading = false;
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6983364109428063/7136054210";
     private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-6983364109428063/9132711917";
-    private static final String BG_COLOR = "#e0f2fe"; // Diselaraskan dengan warna CSS HTML
+    private static final String BG_COLOR = "#e0f2fe";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Paksa Window background sesuai dengan warna dasar HTML (Mencegah White/Black Flash)
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(BG_COLOR)));
-
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.progressBar);
@@ -79,12 +77,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         webView = findViewById(R.id.webview);
-        
-        // 2. Kunci Background WebView sesuai warna HTML
         webView.setBackgroundColor(Color.parseColor(BG_COLOR));
-
-        // 3. Gunakan Akselerasi Hardware GPU secara eksplisit
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        
+        // Mencegah kedipan canvas/elements saat di-render ulang oleh JavaScript
+        webView.setLayerType(View.LAYER_TYPE_NONE, null);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -151,6 +147,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Daftarkan pemantau jaringan sekali saja di onCreate
+        setupNetworkCallback();
+
+        if (!isInternetAvailable()) {
+            isOfflineState = true;
+            showOfflinePage(webView);
+            showOfflineDialog();
+        } else {
+            isOfflineState = false;
+            webView.loadUrl("https://operasihitung17.blogspot.com");
+        }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (webView != null && webView.canGoBack()) {
+                    webView.goBack();
+                } else {
+                    finish();
+                }
+            }
+        });
+    }
+
+    private void setupNetworkCallback() {
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
@@ -174,25 +195,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        if (!isInternetAvailable()) {
-            isOfflineState = true;
-            showOfflinePage(webView);
-            showOfflineDialog();
-        } else {
-            isOfflineState = false;
-            webView.loadUrl("https://operasihitung17.blogspot.com");
+        try {
+            NetworkRequest networkRequest = new NetworkRequest.Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build();
+            connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (webView != null && webView.canGoBack()) {
-                    webView.goBack();
-                } else {
-                    finish();
-                }
-            }
-        });
     }
 
     private void loadNativeAd() {
@@ -216,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 .withAdListener(new com.google.android.gms.ads.AdListener() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Penanganan ketika gagal memuat iklan
+                        // Penanganan saat iklan native gagal dimuat
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder().build())
@@ -316,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onAdLoaded(@NonNull InterstitialAd ad) {
                     interstitialAd = ad;
                     isInterstitialLoading = false;
-                    
+
                     interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                         @Override
                         public void onAdDismissedFullScreenContent() {
@@ -355,41 +365,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        try {
-            connectivityManager.unregisterNetworkCallback(networkCallback);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        try {
-            NetworkRequest networkRequest = new NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    .build();
-            connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Hanya tampilkan halaman offline jika benar-benar terputus dan belum pernah memuat halaman
-        if (!isInternetAvailable() && !isPageLoaded) {
-            isOfflineState = true;
-            showOfflinePage(webView);
-            showOfflineDialog();
-        }
     }
 
     @Override
     protected void onDestroy() {
+        try {
+            if (connectivityManager != null && networkCallback != null) {
+                connectivityManager.unregisterNetworkCallback(networkCallback);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (currentNativeAd != null) {
             currentNativeAd.destroy();
         }
-        if (webView != null) webView.destroy();
+        if (webView != null) {
+            webView.destroy();
+        }
         super.onDestroy();
     }
 }
