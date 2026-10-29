@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Base.Theme.BilanganNumerasiApp" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Mengunci warna background awal aplikasi untuk mencegah white flash saat perpindahan halaman -->
         <item name="android:windowBackground">#e0f2fe</item>
         <item name="android:colorBackground">#e0f2fe</item>
+        
+        <!-- Mencegah kilatan putih saat transisi iklan AdMob -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 </resources>
