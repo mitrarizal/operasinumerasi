@@ -1,17 +1,27 @@
-# Proteksi kelas Application dan Activity utama dari obfuskasi R8
--keep class com.ujiannet.id.MyApplication { *; }
--keep class com.ujiannet.id.MainActivity { *; }
--keepclasseswithmembers class * extends android.app.Application {
-    <init>();
+# ==============================================================================
+# JAVASCRIPT INTERFACE (BRIDGE WEBVIEW & NATIVE)
+# ==============================================================================
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
 }
+-keepattributes JavascriptInterface
 
-# Proteksi Google Play Services & AdMob
+# ==============================================================================
+# MENJAGA CLASS APPLICATION & PACKAGE UTAMA (MENCEGAH ClassNotFoundException)
+# ==============================================================================
+-keep class com.bilangannumerasiapp.MyApplication { *; }
+-keep class com.bilangannumerasiapp.** { *; }
+-keep class com.ujiannet.id.** { *; }
+
+# ==============================================================================
+# MENJAGA GOOGLE MOBILE ADS (ADMOB)
+# ==============================================================================
 -keep class com.google.android.gms.ads.** { *; }
 -dontwarn com.google.android.gms.ads.**
 
-# Proteksi Firebase
--keep class com.google.firebase.** { *; }
--dontwarn com.google.firebase.**
-
-# Mempertahankan atribut runtime dan refleksi
--keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+# ==============================================================================
+# MENJAGA PROTEKSI LISENSI & PLAY INTEGRITY GOOGLE PLAY (PAIRIP)
+# ==============================================================================
+-keep class com.pairip.** { *; }
+-keepclassmembers class com.pairip.** { *; }
+-dontwarn com.pairip.**
