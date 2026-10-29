@@ -21,7 +21,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -53,11 +52,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean isInterstitialLoading = false;
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6983364109428063/7136054210";
 
+    // Jeda minimal antar penayangan iklan (25 detik) untuk mencegah penumpukan transisi
+    private long lastAdShowTime = 0;
+    private static final long AD_COOLDOWN_MS = 25000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Mencegah flash hitam/gelap saat window dibuat
+        // Menyamakan warna dasar window dengan tema game
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F8F9FA")));
         setContentView(R.layout.activity_main);
 
@@ -74,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView = findViewById(R.id.webview);
-        // Menghilangkan kedap-kedip WebView
-        webView.setBackgroundColor(Color.TRANSPARENT);
+        // Mengunci background WebView agar selaras dengan tema game (mencegah white flash)
+        webView.setBackgroundColor(Color.parseColor("#F8F9FA"));
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         int topPadding = (int) (20 * getResources().getDisplayMetrics().density);
         webView.setPadding(0, topPadding, 0, 0);
@@ -214,14 +218,14 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onAdDismissedFullScreenContent() {
                             interstitialAd = null;
-                            resumeWebGame(); // Mengembalikan layar game di Web
+                            resumeWebGame();
                             loadInterstitialAd();
                         }
 
                         @Override
                         public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                             interstitialAd = null;
-                            resumeWebGame(); // Mengembalikan layar game jika iklan gagal tampil
+                            resumeWebGame();
                             loadInterstitialAd();
                         }
                     });
@@ -240,18 +244,24 @@ public class MainActivity extends AppCompatActivity {
     public void panggilIklanInterstisial() {
         runOnUiThread(() -> {
             if (!isFinishing() && !isDestroyed()) {
-                if (interstitialAd != null) {
+                long currentTime = System.currentTimeMillis();
+
+                // Tampilkan iklan hanya jika iklan siap DAN jeda waktu 25 detik terpenuhi
+                if (interstitialAd != null && (currentTime - lastAdShowTime >= AD_COOLDOWN_MS)) {
+                    lastAdShowTime = currentTime;
                     interstitialAd.show(MainActivity.this);
                 } else {
-                    Toast.makeText(MainActivity.this, "Iklan sedang disiapkan, coba sebentar lagi...", Toast.LENGTH_SHORT).show();
-                    resumeWebGame(); // Mencegah layar putih macet jika iklan belum siap
-                    loadInterstitialAd();
+                    // Lanjut instan tanpa Toast penunda layar (Silent Fallback)
+                    resumeWebGame();
+                    if (interstitialAd == null) {
+                        loadInterstitialAd();
+                    }
                 }
             }
         });
     }
 
-    // Menginformasikan ke JavaScript web bahwa iklan selesai / gagal agar tampilan game kembali normal
+    // Callback instan ke JavaScript agar WebView lanjut render tanpa jeda
     private void resumeWebGame() {
         if (webView != null) {
             webView.evaluateJavascript(
