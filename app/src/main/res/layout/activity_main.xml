@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e0f2fe">
+    android:background="#e0f2fe"
+    android:fitsSystemWindows="true">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -18,13 +19,12 @@
         android:layout_above="@id/nativeAdContainer"
         android:background="#e0f2fe" />
 
-    <!-- Kunci tinggi minimum agar tidak mendadak membesar saat iklan muncul -->
     <FrameLayout
         android:id="@+id/nativeAdContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="70dp"
         android:layout_alignParentBottom="true"
-        android:background="#e0f2fe" />
+        android:background="#e0f2fe"
+        android:visibility="gone" />
 
 </RelativeLayout>
