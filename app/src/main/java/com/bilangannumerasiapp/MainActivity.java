@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6983364109428063/7136054210";
     private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-6983364109428063/9132711917";
-    private static final String GAME_URL = "https://operasihitung17.blogspot.com";
+    private static final String GAME_URL = "https://operasihitung17.blogspot.com/?m=1";
     private static final String BG_COLOR = "#e0f2fe";
 
     private final Runnable retryNativeAdRunnable = this::loadNativeAd;
