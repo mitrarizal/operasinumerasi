@@ -2,29 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e0f2fe"
-    android:fitsSystemWindows="true">
+    android:background="#F0F9FF">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
-
+    <!-- WebView Game Tampil Penuh -->
     <WebView
-        android:id="@+id/webview"
+        android:id="@+id/game_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/nativeAdContainer"
-        android:background="#e0f2fe" />
+        android:layout_height="match_parent" />
 
+    <!-- Kontainer Native Advanced (Hanya tampil di Layar Menu/Home saat tidak bermain) -->
     <FrameLayout
-        android:id="@+id/nativeAdContainer"
+        android:id="@+id/native_ad_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#e0f2fe"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="14dp"
         android:visibility="gone" />
 
 </RelativeLayout>
