@@ -6,13 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- WAJIB KEBIJAKAN FAMILIES & ANAK: Hapus izin Advertising ID & AdServices ID -->
-    <uses-permission
-        android:name="com.google.android.gms.permission.AD_ID"
-        tools:node="remove" />
-    <uses-permission
-        android:name="android.permission.ACCESS_ADSERVICES_AD_ID"
-        tools:node="remove" />
+    <!-- Deklarasi Izin Advertising ID (Sesuai Pernyataan "Ya" di Google Play Console) -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
         android:allowBackup="true"
@@ -30,15 +25,10 @@
             android:resource="@xml/gma_ad_services_config"
             tools:replace="android:resource" />
 
-        <!-- Ganti dengan ID Aplikasi AdMob Produksi Anda sebelum rilis -->
+        <!-- ID Aplikasi Google AdMob Produksi Anda -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6983364109428063~5433371566" />
-
-        <!-- Tunda pengukuran SDK sampai tag Child-Directed (COPPA/G) diterapkan -->
-        <meta-data
-            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
-            android:value="true" />
 
         <activity
             android:name=".MainActivity"
