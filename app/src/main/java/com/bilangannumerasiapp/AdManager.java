@@ -37,9 +37,9 @@ import java.util.Date;
 public class AdManager implements DefaultLifecycleObserver {
 
     // Ganti dengan Unit ID Produksi AdMob Anda sebelum rilis ke Google Play
-    private static final String AD_UNIT_APP_OPEN = "ca-app-pub-3940256099942544/9257395921";
-    private static final String AD_UNIT_NATIVE = "ca-app-pub-3940256099942544/2247696110";
-    private static final String AD_UNIT_INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";
+    private static final String AD_UNIT_APP_OPEN = "ca-app-pub-6983364109428063/6489749004";
+    private static final String AD_UNIT_NATIVE = "ca-app-pub-6983364109428063/9132711917";
+    private static final String AD_UNIT_INTERSTITIAL = "ca-app-pub-6983364109428063/7136054210";
 
     // Cooldown untuk menjaga kepatuhan Google Play Better Ads / Families Policy
     private static final long INTERSTITIAL_COOLDOWN_MS = 45_000L;
