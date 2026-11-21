@@ -35,11 +35,14 @@
 }
 
 # =========================================================================
-# 3. PERLINDUNGAN LIFECYCLE OBSERVER (APP OPEN AD)
+# 3. PERLINDUNGAN LIFECYCLE OBSERVER & STARTUP INITIALIZER (APP OPEN AD)
 # =========================================================================
 -keep class com.bilangannumerasiapp.AdManager {
     public *;
 }
+
+-keep class androidx.lifecycle.ProcessLifecycleOwner { *; }
+-keep class androidx.lifecycle.ProcessLifecycleInitializer { *; }
 
 -keep class * implements androidx.lifecycle.LifecycleObserver {
     <init>(...);
