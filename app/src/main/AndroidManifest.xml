@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Izin Jaringan Wajib -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- WAJIB KEBIJAKAN FAMILIES & ANAK: Hapus izin Advertising ID (AD_ID) -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="Operasi Hitung Championship"
-        android:supportsRtl="true"
         android:hardwareAccelerated="true"
-        android:theme="@style/Base.Theme.BilanganNumerasiApp">
+        android:icon="@mipmap/ic_launcher"
+        android:label="Operasi Hitung Numerasi"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+        android:usesCleartextTraffic="false">
 
-        <!-- ID Aplikasi AdMob Utama -->
+        <!-- Ganti dengan ID Aplikasi AdMob Produksi Anda sebelum rilis -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6983364109428063~5433371566" />
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
+        <!-- Tunda pengukuran SDK sampai tag Child-Directed (COPPA/G) diterapkan -->
+        <meta-data
+            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
+            android:value="true" />
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
