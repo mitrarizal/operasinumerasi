@@ -24,11 +24,9 @@ misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
-# Keystore files
+# Keystore & Google Services
 *.jks
 *.keystore
-
-# Google Services (e.g. APIs or Firebase)
 google-services.json
 
 # Android Profiling
